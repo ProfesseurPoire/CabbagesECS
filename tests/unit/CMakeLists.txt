@@ -9,6 +9,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 target_sources(${PROJECT_NAME}
     PUBLIC 
         src/main.cpp 
+        src/UTComponent.cpp
         src/UTEntity.cpp)
 
 target_link_libraries(${PROJECT_NAME} CabbagesECS cabbages-test)

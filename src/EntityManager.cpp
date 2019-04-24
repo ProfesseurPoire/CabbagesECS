@@ -10,7 +10,7 @@ EntityManager::EntityManager(World& world, int size)
     for (int i=0; i< size; ++i)
     {
         _entities[i].key = i;
-        _entities->world = &world;
+        _entities[i].world = &world;
         _entity_pool.emplace(&_entities[i]);
     }
 }

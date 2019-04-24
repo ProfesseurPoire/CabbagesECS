@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cabba/test/test.h>
 #include <cabba/ecs/Entity.h>
 #include <cabba/ecs/EntityManager.h>

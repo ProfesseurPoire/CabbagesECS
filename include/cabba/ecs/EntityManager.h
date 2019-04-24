@@ -20,7 +20,6 @@ public:
 
     /*
      * @brief   Builds a new Entity Manager object that will contains
-     *          
      */
     EntityManager(World& game, int size);
 
@@ -76,14 +75,14 @@ public:
         int index = 0;
     };
 
-    EntityManager::Iterator begin()
+    Iterator begin()
     {
-        return EntityManager::Iterator(0, _entities, registeredEntities);
+        return Iterator(0, _entities, registeredEntities);
     }
 
-    EntityManager::Iterator end()
+    Iterator end()
     {
-        return EntityManager::Iterator(registeredEntities.size(), _entities, registeredEntities);
+        return Iterator(registeredEntities.size(), _entities, registeredEntities);
     }
 
 private:
