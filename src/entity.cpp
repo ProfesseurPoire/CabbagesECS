@@ -1,4 +1,4 @@
-#include "entity.h"
+#include <cabba/ecs/Entity.h>
 
 namespace cabba
 {

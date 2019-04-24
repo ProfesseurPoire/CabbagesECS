@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cabba/containers/List.h>
+#include <vector>
 
 namespace cabba
 {
@@ -30,6 +30,6 @@ namespace cabba
         }
 
 		T components[Size]{};
-		List<int>	registeredComponents;
+		std::vector<int>	registeredComponents;
 	};
 }

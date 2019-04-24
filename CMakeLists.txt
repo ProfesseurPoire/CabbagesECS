@@ -4,6 +4,8 @@ project(CabbagesECS VERSION 1.0.0)
 
 add_library(${PROJECT_NAME} STATIC "") 
 
+add_subdirectory(ext/Cabbages-test)
+
 target_sources(${PROJECT_NAME} PRIVATE
     src/entity.cpp
     src/EntityManager.cpp
@@ -26,3 +28,5 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 target_include_directories( ${PROJECT_NAME} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
+
+add_subdirectory(tests/unit)

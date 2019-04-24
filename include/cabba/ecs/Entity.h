@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cabba/String.h>
-#include <cabba/containers/List.h>
+#include <string>
 
 #include <cabba/ecs/World.h>
 
@@ -22,10 +21,10 @@ namespace cabba
 
         bool enabled;
 
-        String name;
-        String type;
+        std::string name;
+        std::string type;
 
-        List<String> tags;
+        std::vector<std::string> tags;
 
         EntityId id()const;
 

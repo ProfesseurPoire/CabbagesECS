@@ -1,33 +1,34 @@
-#include "SystemManager.h"
-#include "system.h"
+#include <cabba/ecs/SystemManager.h>
+#include <cabba/ecs/System.h>
 
 namespace cabba
 {
-    SystemManager::~SystemManager()
+
+SystemManager::~SystemManager()
+{
+    Clear();
+}
+
+void SystemManager::Clear()
+{
+    for (auto* system : systems)
     {
-        Clear();
+        delete system;
     }
 
-	void SystemManager::Clear()
-	{
-		for (auto* system : systems)
-		{
-			delete system;
-		}
+    systems.clear();
+}
 
-		systems.clear();
-	}
+void SystemManager::Add(SystemInterface* system)
+{
+    systems.push_back(system);
+}
 
-    void SystemManager::Add(SystemInterface* system)
+void SystemManager::Update(World& game, float elapsedTime)
+{
+    for (auto* system : systems)
     {
-        systems.add(system);
+        system->Update(game, elapsedTime);
     }
-
-	void SystemManager::Update(World& game, float elapsedTime)
-	{
-		for (auto* system : systems)
-		{
-			system->Update(game, elapsedTime);
-		}
-	}
+}
 }

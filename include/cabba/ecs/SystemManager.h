@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cabba/containers/List.h>
+#include <vector>
 
 namespace cabba
 {
@@ -32,6 +32,6 @@ namespace cabba
 
     private:
 
-        List<SystemInterface*> systems;
+        std::vector<SystemInterface*> systems;
     };
 };
