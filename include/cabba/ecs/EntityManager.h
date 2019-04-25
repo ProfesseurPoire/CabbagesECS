@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cabba/ecs/entity.h>
-
 #include <vector>
 #include <string>
 #include <stack>
@@ -9,6 +7,7 @@
 namespace cabba
 {
 class World;
+class Entity;
 
 class EntityManager
 {
@@ -46,44 +45,20 @@ public:
     {
     public:
 
-        Iterator(int start, Entity* c, std::vector<int>& rc)
-            : entities(c), registeredEntities(rc), index(start)
-        {}
+        Iterator(int start, Entity* c, std::vector<int>& rc);
 
-        Entity& operator->()const noexcept
-        {
-            return entities[registeredEntities[index]];
-        }
-
-        Entity& operator*()const
-        {
-            return entities[registeredEntities[index]];
-        }
-
-        void operator++()
-        {
-            index++;
-        }
-
-        bool operator!=(const Iterator& it)const
-        {
-            return index != it.index;
-        }
+        Entity& operator->  ()const;
+        Entity& operator*   ()const;
+        void    operator++  ();
+        bool    operator!=  (const Iterator& it)const;
 
         Entity*		entities;
         std::vector<int>&		registeredEntities;
         int index = 0;
     };
 
-    Iterator begin()
-    {
-        return Iterator(0, _entities, registeredEntities);
-    }
-
-    Iterator end()
-    {
-        return Iterator(registeredEntities.size(), _entities, registeredEntities);
-    }
+    Iterator begin();
+    Iterator end();
 
 private:
 

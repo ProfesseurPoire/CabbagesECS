@@ -3,6 +3,29 @@
 
 namespace cabba
 {
+    EntityManager::Iterator::Iterator(int start, Entity* c, std::vector<int>& rc)
+        : entities(c), registeredEntities(rc), index(start)
+    {}
+
+    Entity& EntityManager::Iterator::operator->()const
+    {
+        return entities[registeredEntities[index]];
+    }
+
+    Entity& EntityManager::Iterator::operator*()const
+    {
+        return entities[registeredEntities[index]];
+    }
+
+    void EntityManager::Iterator::operator++()
+    {
+        index++;
+    }
+
+    bool EntityManager::Iterator::operator!=(const Iterator& it)const
+    {
+        return index != it.index;
+    }
 
 EntityManager::EntityManager(World& world, int size)
     : _entity_count(size), _entities(new Entity[size]),_world(world)

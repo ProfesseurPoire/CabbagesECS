@@ -21,7 +21,7 @@ public:
 
     void set_up()override
     {
-        world   = new World();
+        world   = new World(entity_size);
         manager = new EntityManager(*world, entity_size);
     }
 

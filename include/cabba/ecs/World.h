@@ -44,7 +44,7 @@ namespace cabba
         template<class T>
         ComponentPool<T>* initializePool()
         {
-            auto* p = new ComponentPool<T>;
+            auto* p = new ComponentPool<T>(100,100);
             _pools[typeid(T)] = p;
             return p;
         }
