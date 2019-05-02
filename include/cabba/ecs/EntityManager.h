@@ -1,26 +1,35 @@
 #pragma once
 
-#include <vector>
-#include <string>
+
 #include <stack>
+#include <cabba/containers/List.h>
 
 namespace cabba
 {
 class World;
 class Entity;
 
+/*
+ * @brief   Use this class to create and delete new entities. This class
+ *          is managed by World
+ */
 class EntityManager
 {
     int keys = 0;
 
 public:
     
-   // EntityManager(World& game);
+    // EntityManager(World& game);
 
     /*
      * @brief   Builds a new Entity Manager object that will contains
      */
     EntityManager(World& game, int size);
+
+    /*
+     * @brief   Returns how many entities have been pooled
+     */
+    int used()const;
 
     /*
      * @brief   Returns how many entity the user can pool from the manager
@@ -31,44 +40,48 @@ public:
      * @brief   Returns how many entity the manager owns
      */
     int size()const;
+    
+    /*
+     * @brief   Returns an unsued entity
+     */
+    Entity* pool();
 
-    // Get an unused entity 
-    Entity* Pool();
-    Entity* Pool(const std::string& name);
+    Entity* get(const int index);
 
-    Entity* Get(int index);
-
-    // When you arCe done with an entity, release it
+    /*
+     * @brief   Release an entity
+     *
+     *          Actually adds the entity to a list of entity that needs to be released
+     *          You still need to call "cleanup"/"finish"/"clear". Ideally, you'll
+     *          want to use the release function to tag entities that you want to
+     *          destroy during the game's loop. Then, after you're done iterating through
+     *          every component/entity/system, you call the clean function to actually
+     *          release everything that was tagged for release
+     *
+     * @param   entity  Entity that will be released (put back into the stack for 
+     *                  later reuse)
+     */
     void release(Entity* entity);
 
-    class Iterator
-    {
-    public:
+    /*
+     * @brief   Immediatly release an entity. You might want to avoid doing that
+     *          if you're currently looping your entity or components since you might
+     *          get into undefined behavior 
+     */
+    void release_immediate(Entity* e);
 
-        Iterator(int start, Entity* c, std::vector<int>& rc);
-
-        Entity& operator->  ()const;
-        Entity& operator*   ()const;
-        void    operator++  ();
-        bool    operator!=  (const Iterator& it)const;
-
-        Entity*		entities;
-        std::vector<int>&		registeredEntities;
-        int index = 0;
-    };
-
-    Iterator begin();
-    Iterator end();
+    /*
+     * @brief   Actualy release the entities that have been marked for release
+     */
+    void finalize_release();
 
 private:
 
-    Entity* _entities;
-    int _entity_count = 0;
-
-    std::vector<int> registeredEntities;
-
-    // Entities that the user can use
-    std::stack<Entity*> _entity_pool;
     World& _world;
+    Entity* _entities;
+
+    List<int>        _registered_entities;
+    List<Entity*>    _released_entities;
+    std::stack<Entity*>     _entity_pool;
 };
 }

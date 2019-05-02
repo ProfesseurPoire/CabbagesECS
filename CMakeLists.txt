@@ -4,7 +4,15 @@ project(CabbagesECS VERSION 1.0.0)
 
 add_library(${PROJECT_NAME} STATIC "") 
 
-add_subdirectory(ext/Cabbages-test)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_package(SimpleListd 1.0.0 NAMES CONFIG REQUIRED)
+else()
+    find_package(SimpleList 1.0.0 NAMES CONFIG REQUIRED)
+endif()
+
+target_link_libraries(${PROJECT_NAME}  debug		SimpleListd)
+target_link_libraries(${PROJECT_NAME}  optimized	SimpleList)
+
 
 target_sources(${PROJECT_NAME} PRIVATE
     src/entity.cpp

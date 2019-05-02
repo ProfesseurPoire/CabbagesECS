@@ -3,7 +3,6 @@
 
 namespace cabba
 {
-
 SystemManager::~SystemManager()
 {
     Clear();
@@ -15,7 +14,6 @@ void SystemManager::Clear()
     {
         delete system;
     }
-
     systems.clear();
 }
 

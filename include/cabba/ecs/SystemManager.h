@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <cabba/containers/List.h>
 
 namespace cabba
 {
@@ -13,13 +13,13 @@ namespace cabba
 
     // Lifecycle
 
-		SystemManager(){}
-		SystemManager(const SystemManager&) = delete;
+        SystemManager(){}
+        SystemManager(const SystemManager&) = delete;
         ~SystemManager();
 
     // Assignment Operators
 
-		SystemManager& operator=(const SystemManager&) = delete;
+        SystemManager& operator=(const SystemManager&) = delete;
 
     // Methods
 
@@ -32,6 +32,6 @@ namespace cabba
 
     private:
 
-        std::vector<SystemInterface*> systems;
+        List<SystemInterface*> systems;
     };
 };

@@ -3,32 +3,8 @@
 
 namespace cabba
 {
-    EntityManager::Iterator::Iterator(int start, Entity* c, std::vector<int>& rc)
-        : entities(c), registeredEntities(rc), index(start)
-    {}
-
-    Entity& EntityManager::Iterator::operator->()const
-    {
-        return entities[registeredEntities[index]];
-    }
-
-    Entity& EntityManager::Iterator::operator*()const
-    {
-        return entities[registeredEntities[index]];
-    }
-
-    void EntityManager::Iterator::operator++()
-    {
-        index++;
-    }
-
-    bool EntityManager::Iterator::operator!=(const Iterator& it)const
-    {
-        return index != it.index;
-    }
-
 EntityManager::EntityManager(World& world, int size)
-    : _entity_count(size), _entities(new Entity[size]),_world(world)
+    : _entities(new Entity[size]),_world(world)
 {
     for (int i=0; i< size; ++i)
     {
@@ -37,58 +13,21 @@ EntityManager::EntityManager(World& world, int size)
         _entity_pool.emplace(&_entities[i]);
     }
 }
-//
-//EntityManager::EntityManager(World& systemManager)
-//    : _world(systemManager)
-//{
-//    int k = 0;
-//    for (int i=0; i< size; ++i)
-//    {
-//        _entities[i].key = i;
-//        _entities->world = &world;
-//        _entity_pool.emplace(&_entities[i]);
-//    }
-//}
 
-Entity* EntityManager::Pool()
+Entity* EntityManager::pool()
 {
     Entity* e = _entity_pool.top();
-    registeredEntities.push_back(e->id());
-    _entity_pool.pop();
-    return e;
-}
-
-Entity* EntityManager::Pool(const std::string& str)
-{
-    Entity* e = _entity_pool.top();
-    e->name = str.c_str();
-    registeredEntities.push_back(e->id());
+    _registered_entities.push_back(e->id());
     _entity_pool.pop();
     return e;
 }
 
 void EntityManager::release(Entity* entity)
 {
-    for (const std::type_index& typeIndex : entity->registeredComponents())
-    {
-        for (auto& pair : _world._pools)
-        {
-            if (pair.first == typeIndex)
-            {
-                pair.second->unregisterComponent(entity->id());
-            }
-        }
-    }
-    registeredEntities.erase(
-        std::find(
-            registeredEntities.begin(),
-            registeredEntities.end(),
-            entity->id()));
-
-    _entity_pool.emplace(entity);
+    _released_entities.push_back(entity);
 }
 
-Entity* EntityManager::Get(int id)
+Entity* EntityManager::get(const int id)
 {
     return &_entities[id];
 }
@@ -103,4 +42,31 @@ int EntityManager::size()const
     return _entity_pool.size();
 }
 
+void EntityManager::release_immediate(Entity* e)
+{
+    // Making sure to also delete the components I guess
+    for (auto& pair : _world._pools)
+    {
+        // Check if there's a component associated to the entity
+        if(pair.second->exist(e->id()))
+        {
+            // Then we remove the component from the entity
+            pair.second->remove(e->id());
+        }
+    }
+
+    _registered_entities.remove(e->id());
+    _entity_pool.emplace(e);
+}
+
+void EntityManager::finalize_release()
+{
+    for (int i = 0; i < _released_entities.size(); ++i)
+    {
+        release_immediate(_released_entities[i]);
+    }
+    _released_entities.clear();
+}
+
+int EntityManager::used()const { return _registered_entities.size();}
 }

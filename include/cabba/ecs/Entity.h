@@ -1,12 +1,6 @@
 #pragma once
 
-#include <string>
-
 #include <cabba/ecs/World.h>
-
-#include <vector>
-#include <typeindex>
-#include <typeinfo>
 
 namespace cabba
 {
@@ -21,14 +15,9 @@ namespace cabba
 
         bool enabled;
 
-        std::string name;
-        std::string type;
-
-        std::vector<std::string> tags;
-
         EntityId id()const;
 
-        /*
+        /*!
          * @brief Retrieve the component of type T associated with the entity
          *  
          *  Returns nullptr if the component has not been registered beforehand
@@ -37,64 +26,51 @@ namespace cabba
          *  better off using systems
          */
         template<class T>
-        T* GetComponent()
+        typename ComponentPool<T>::Handle get_component()
         {
-            for (auto& typeIndex : _registeredComponents)
-            {
-                if (typeIndex == typeid(T))
-                {
-                    return &(*world->getPool<T>()).components[id()];
-                }
-            }
-            return nullptr;
+            return world->get_pool<T>()->get(key);
         }
 
-        template<class T>
-        T* getComponent()
-        {
-            
-        }
-
-        /*
-         *  @brief Attach a new component to the entity
-         *
-         *  Only 1 component of type T can exist at any given time
-         *  so if the component was already attached, we return it 
+        /*!
+         * @brief   Attach a new component to the entity
+         *          Only 1 component of type T can exist at any given time
+         *          so if the component was already attached, we return it 
          */
         template<class T>
-        T* AddComponent()
+        void add_component()
         {
-            if (hasComponent<T>())
+            if (!has_component<T>())
             {
-                return GetComponent<T>();
+                world->get_pool<T>()->add(key);
             }
-            _registeredComponents.push_back(typeid(T));
-            return world->getPool<T>()->Add(id());
         }
 
+        /*!
+         * @brief   Checks if the entity is associated to a component of type T
+         * 
+         * @return  Returns true if a component has been associated, false
+         *          otherwise
+         */
         template<class T>
-        bool hasComponent()
+        bool has_component()
         {
-            std::type_index typeIndex = typeid(T);
-
-            for (const std::type_index& component : _registeredComponents)
-            {
-                if (typeIndex == component)
-                {
-                    return true;
-                }
-            }
-            return false;
+            // I don't know if I should also check if the pool exist
+            // maybe adds an assert?
+            return world->get_pool<T>()->exist(key);
         }
 
+        /*!
+         * @brief   Marks the entity for destruction
+         * 
+         *          You don't want to directly destroy entities when you're
+         *          still stuck inside the game loop (messes up indices and 
+         *          iteration, can turn even worse if some allocation happens 
+         *          if you're using iterators), so we delay their destruction 
+         *          at a later stage by setting this flag to true
+         */
         void destroy()
         {
             _to_destroy = true;
-        }
-
-        const std::vector<std::type_index> registeredComponents()
-        {
-            return _registeredComponents;
         }
 
     protected:
@@ -104,8 +80,6 @@ namespace cabba
 
         bool    _to_destroy;
         int     key;
-
-        std::vector<std::type_index> _registeredComponents;
 
         World* world = nullptr;
     };

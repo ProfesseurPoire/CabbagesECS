@@ -5,7 +5,6 @@
 #include <cabba/ecs/SystemManager.h>
 
 #include <map>
-#include <typeinfo> 
 #include <typeindex>
 
 namespace cabba
@@ -14,55 +13,54 @@ namespace cabba
     // initialized. Thus I advise you to initialize every 
     // pool at the start of the game to avoid random
     // memory allocation when the game started
-
     class World
     {
     public:
 
-        /*
+        /*!
          * @brief   Construct the world object and the EntityManager and 
          *          component manager using the given parameters
          */
-        World(int entity_count)
-            : _entity_manager(*this, entity_count)
-        {
-            
-        }
+        World(const int entity_count) 
+        :   _entity_manager(*this, entity_count){}
 
-        /*
+        /*!
          *  @brief Returns a pool of type T. Must have been initialized before
          */
         template<class T>
-        ComponentPool<T>* getPool()
+        ComponentPool<T>* get_pool()
         {
             return static_cast<ComponentPool<T>*>(_pools.at(typeid(T)));
         }
 
-        /*
-         *  @brief Initialize a pool of type T 
+        /*!
+         *  @brief  Initialize a pool of type T 
+         *  
+         *  @param  pool_size Size of the pool
          */
         template<class T>
-        ComponentPool<T>* initializePool()
+        void initialize_pool(const int pool_size)
         {
-            auto* p = new ComponentPool<T>(100,100);
-            _pools[typeid(T)] = p;
-            return p;
+            _pools[typeid(T)] = new ComponentPool<T>(_entity_manager.size(), pool_size);
         }
 
         template<class T>
         void remove(int entity_id)
-        {   // Removing a component from the system is just removing
+        {   // Removing a component pool from the system is just removing
             // it from the list of the registered_components
             _pools[typeid(T)]->registeredComponents.remove(entity_id);
         }
 
-        std::map<std::type_index, AbstractPool*> _pools;
+        /*!
+         * @brief   Returns a reference to the entity manager
+         */
+        EntityManager& entity_manager() { return _entity_manager; }
 
+        std::map<std::type_index, AbstractPool*> _pools;
 
     private:
 
-        EntityManager _entity_manager;
-        SystemManager _system_manager;
-
+        EntityManager       _entity_manager;
+        SystemManager       _system_manager;
     };
 }
