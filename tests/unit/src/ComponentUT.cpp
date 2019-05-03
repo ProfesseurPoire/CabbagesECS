@@ -58,7 +58,7 @@ TEST_F(ComponentUT, get_component)
 
 TEST_F(ComponentUT, get_raw_component)
 {
-    Component* component = pool.get_raw(0);
+    ComponentTest* component = pool.get_raw(0);
 
     assert_that(component->value, equals(5));
 }
