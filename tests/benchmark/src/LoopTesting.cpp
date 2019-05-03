@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <vector>
 
-struct TestComponent
+struct Component
 {
     int v1;
     int v2;
@@ -22,7 +22,7 @@ class LoopTesting : public cabba::test::Test
 {
 public:
 
-    TestComponent* components;
+    Component* components;
 
     int size = 10000000;
 
@@ -40,7 +40,7 @@ public:
     {
         srand(2);
 
-        components          = new TestComponent[size];
+        components          = new Component[size];
         lookup_table        = new int[size];
         random_lookup_table = new int[size];
 
@@ -83,7 +83,7 @@ TEST_F(LoopTesting, testLoop)
 {
     for(int i=0; i< size; ++i)
     {
-        TestComponent& c = components[i];
+        Component& c = components[i];
         sum += 
             c.v1 + c.v2 +
             c.v3 + c.v4;
@@ -125,8 +125,8 @@ TEST_F(LoopTesting, lookup_table)
 
 TEST_F(LoopTesting, iterator_loop)
 {
-    TestComponent* start = components;
-    TestComponent* end   = &components[size-1];
+    Component* start = components;
+    Component* end   = &components[size-1];
 
     while(start!=end)
     {

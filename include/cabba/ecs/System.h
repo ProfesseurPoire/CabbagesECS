@@ -8,9 +8,9 @@ class World;
  * @brief	A system is simply an update function
  *			Could probably be simplified even more
  */
-struct SystemInterface
+class SystemInterface
 {
-    virtual void Update(World&, float) {};
+public:
+    virtual void update(World&, float elapsed_time) {};
 };
-
 }

@@ -56,6 +56,11 @@ namespace cabba
          */
         EntityManager& entity_manager() { return _entity_manager; }
 
+        /*!
+         * @brief   Returns a reference to the system manager
+         */
+        SystemManager& system_manager() { return _system_manager; }
+
         std::map<std::type_index, AbstractPool*> _pools;
 
     private:

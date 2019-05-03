@@ -2,7 +2,7 @@
 #include <cabba/ecs/Entity.h>
 #include <cabba/ecs/EntityManager.h>
 
-struct TestComponent
+static struct Component
 {
     int value;
 };
@@ -10,7 +10,7 @@ struct TestComponent
 using namespace cabba::test;
 using namespace cabba;
 
-class EntityTesting : public cabba::test::Test
+class EntityUT : public cabba::test::Test
 {
 public:
 
@@ -23,23 +23,23 @@ public:
     void set_up()override
     {
         manager = &world.entity_manager();
-        world.initialize_pool<TestComponent>(component_pool_count);
+        world.initialize_pool<Component>(component_pool_count);
     }
 };
 
-TEST_F(EntityTesting, pool_size)
+TEST_F(EntityUT, pool_size)
 {
     assert_that(manager->size(), equals(entity_size));
     assert_that(manager->left(), equals(entity_size));
 }
 
-TEST_F(EntityTesting, pool)
+TEST_F(EntityUT, pool)
 {
     Entity* e = manager->pool();
     assert_that(manager->left(), equals(entity_size - 1));
 }
 
-TEST_F(EntityTesting, release)
+TEST_F(EntityUT, release)
 {
     Entity* e = manager->pool();
     assert_that(manager->left(), equals(entity_size - 1));
@@ -50,7 +50,7 @@ TEST_F(EntityTesting, release)
     assert_that(manager->left(), equals(entity_size));
 }
 
-TEST_F(EntityTesting, release_multiple)
+TEST_F(EntityUT, release_multiple)
 {
     manager->release(manager->pool());
     manager->release(manager->pool());
@@ -64,20 +64,20 @@ TEST_F(EntityTesting, release_multiple)
     assert_that(manager->used(), equals(0));
 }
 
-TEST_F(EntityTesting, add_component)
+TEST_F(EntityUT, add_component)
 {
     Entity* e = manager->pool();
 
-    assert_that(e->has_component<TestComponent>(), equals(false));
+    assert_that(e->has_component<Component>(), equals(false));
 
-    e->add_component<TestComponent>();
+    e->add_component<Component>();
 
-    assert_that(e->has_component<TestComponent>(), equals(true));
+    assert_that(e->has_component<Component>(), equals(true));
 
-    auto handle = e->get_component<TestComponent>();
+    auto handle = e->get_component<Component>();
     handle->value = 5;
 
-    auto handle2 = e->get_component<TestComponent>();
+    auto handle2 = e->get_component<Component>();
 
     assert_that(handle2->value, equals(5));
 }

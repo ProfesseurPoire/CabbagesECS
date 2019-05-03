@@ -6,7 +6,7 @@
 using namespace cabba::test;
 using namespace cabba;
 
-struct Component
+static struct Component
 {
     int value = 5;
 };
@@ -17,7 +17,7 @@ Param& operator<<(Param& p, Component c)
     return p;
 }
 
-class ComponentTesting : public Test
+class ComponentUT : public Test
 {
 public:
 
@@ -32,13 +32,13 @@ public:
     }
 };
 
-TEST_F(ComponentTesting, add_component)
+TEST_F(ComponentUT, add_component)
 {
     assert_that(pool.left(), equals(component_size - 1));
     assert_that(pool.used(), equals(1));
 }
 
-TEST_F(ComponentTesting, get_component)
+TEST_F(ComponentUT, get_component)
 {
     // Just making sure the get returns a handle
     // to the same component
@@ -56,14 +56,14 @@ TEST_F(ComponentTesting, get_component)
     assert_that(component3.valid(), equals(false));
 }
 
-TEST_F(ComponentTesting, get_raw_component)
+TEST_F(ComponentUT, get_raw_component)
 {
     Component* component = pool.get_raw(0);
 
     assert_that(component->value, equals(5));
 }
 
-TEST_F(ComponentTesting, remove_component)
+TEST_F(ComponentUT, remove_component)
 {
     assert_that(pool.left(), equals(component_size - 1));
     assert_that(pool.used(), equals(1));
@@ -74,7 +74,7 @@ TEST_F(ComponentTesting, remove_component)
     assert_that(pool.used(), equals(0));
 }
 
-TEST_F(ComponentTesting, remove_unorder)
+TEST_F(ComponentUT, remove_unorder)
 {
     pool.add(1);
     pool.add(2);
@@ -107,7 +107,7 @@ TEST_F(ComponentTesting, remove_unorder)
     assert_that(sum, equals(4));
 }
 
-TEST_F(ComponentTesting, loop_components)
+TEST_F(ComponentUT, loop_components)
 {
     pool.add(1);
 
@@ -127,7 +127,7 @@ TEST_F(ComponentTesting, loop_components)
     assert_that(sum, equals(4));
 }
 
-TEST_F(ComponentTesting, component_exist)
+TEST_F(ComponentUT, component_exist)
 {
     assert_that(pool.exist(0), equals(true));
     assert_that(pool.exist(1), equals(false));

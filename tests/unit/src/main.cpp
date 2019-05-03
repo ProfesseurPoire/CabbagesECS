@@ -1,6 +1,6 @@
 #include <cabba/test/test.h>
 
-int main()
+int main(int argc, char** argv)
 {
-    cabba::test::run_all();
+    return cabba::test::run_all();
 }

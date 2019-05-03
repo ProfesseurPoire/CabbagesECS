@@ -3,30 +3,23 @@
 
 namespace cabba
 {
-SystemManager::~SystemManager()
+SystemManager::~SystemManager(){ clear();}
+
+int SystemManager::size() const
 {
-    Clear();
+    return _systems.size();
 }
 
-void SystemManager::Clear()
+void SystemManager::clear()
 {
-    for (auto* system : systems)
-    {
-        delete system;
-    }
-    systems.clear();
+    for (auto& system : _systems)
+        delete system.second;
+    _systems.clear();
 }
 
-void SystemManager::Add(SystemInterface* system)
+void SystemManager::update(World& game, float elapsedTime)
 {
-    systems.push_back(system);
-}
-
-void SystemManager::Update(World& game, float elapsedTime)
-{
-    for (auto* system : systems)
-    {
-        system->Update(game, elapsedTime);
-    }
+    for (auto& system : _systems)
+        system.second->update(game, elapsedTime);
 }
 }

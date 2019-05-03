@@ -7,3 +7,4 @@ endif()
 
 add_subdirectory(benchmark)
 add_subdirectory(unit)
+add_subdirectory(integration)
