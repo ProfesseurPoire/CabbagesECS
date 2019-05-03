@@ -11,7 +11,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     find_package(SimpleList 1.0.0 NAMES CONFIG REQUIRED)
 endif()
-
+ 
 target_link_libraries(${PROJECT_NAME}  debug		SimpleListd)
 target_link_libraries(${PROJECT_NAME}  optimized	SimpleList)
 
