@@ -1,5 +1,5 @@
 #include <cabba/ecs/EntityManager.h>
-#include <cabba/ecs/entity.h>
+#include <cabba/ecs/Entity.h>
 
 namespace cabba
 {
