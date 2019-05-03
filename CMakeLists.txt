@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 3.9.0)
 
 project(CabbagesECS VERSION 1.0.0)
+
 set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 
 add_library(${PROJECT_NAME} STATIC "") 
