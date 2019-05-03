@@ -2,7 +2,7 @@
 #include <cabba/ecs/Entity.h>
 #include <cabba/ecs/EntityManager.h>
 
-static struct Component
+struct Component
 {
     int value;
 };
