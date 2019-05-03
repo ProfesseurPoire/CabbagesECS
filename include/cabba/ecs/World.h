@@ -48,7 +48,7 @@ namespace cabba
         void remove(int entity_id)
         {   // Removing a component pool from the system is just removing
             // it from the list of the registered_components
-            _pools[typeid(T)]->registeredComponents.remove(entity_id);
+            //_pools[typeid(T)]->registeredComponents.remove(entity_id);
         }
 
         /*!
