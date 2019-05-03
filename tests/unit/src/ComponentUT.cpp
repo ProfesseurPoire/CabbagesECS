@@ -6,12 +6,12 @@
 using namespace cabba::test;
 using namespace cabba;
 
-static struct Component
+struct ComponentTest
 {
     int value = 5;
 };
 
-Param& operator<<(Param& p, Component c)
+Param& operator<<(Param& p, ComponentTest c)
 {
     printf("%i", c.value);
     return p;
@@ -24,7 +24,7 @@ public:
     const int entity_size       = 100;
     const int component_size    = 100;
 
-    ComponentPool<Component> pool{ entity_size, component_size };
+    ComponentPool<ComponentTest> pool{ entity_size, component_size };
 
     void set_up()override
     {
@@ -42,7 +42,7 @@ TEST_F(ComponentUT, get_component)
 {
     // Just making sure the get returns a handle
     // to the same component
-    ComponentPool<Component>::Handle component1 =  pool.get(0);
+    ComponentPool<ComponentTest>::Handle component1 =  pool.get(0);
 
     component1->value = 10;
 
@@ -101,7 +101,7 @@ TEST_F(ComponentUT, remove_unorder)
 
     int sum = 0;
 
-    for (Component& comp : pool)
+    for (ComponentTest& comp : pool)
         sum += comp.value;
 
     assert_that(sum, equals(4));
@@ -119,7 +119,7 @@ TEST_F(ComponentUT, loop_components)
 
     int sum     = 0;
 
-    for(Component& comp : pool)
+    for(ComponentTest& comp : pool)
     {
         sum += comp.value;
     }
