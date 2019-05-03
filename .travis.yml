@@ -21,22 +21,22 @@ matrix:
       osx_image: xcode9.2
 
 before_script:  
-	- mkdir install_folder
-	- install_path="$PWD"/install_folder
-	- git clone https://github.com/ProfesseurPoire/Cabbages-test
+    - mkdir install_folder
+    - install_path="$PWD"/install_folder
+    - git clone https://github.com/ProfesseurPoire/Cabbages-test
     - cd Cabbages-test
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_INSTALL_PREFIX=${install_path} -DCMAKE_BUILD_TYPE=Debug
     - make && make install
-	- cd ../..
-	- git clone https://github.com/ProfesseurPoire/SimpleList
-	- cd SimpleList
-	- mkdir build
-	- cd build
-	- cmake .. -DCMAKE_INSTALL_PREFIX=${install_path} -DCMAKE_BUILD_TYPE=Debug 
-	- make && make install
-	- cd ../..
+    - cd ../..
+    - git clone https://github.com/ProfesseurPoire/SimpleList
+    - cd SimpleList
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_INSTALL_PREFIX=${install_path} -DCMAKE_BUILD_TYPE=Debug 
+    - make && make install
+    - cd ../..
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_PREFIX_PATH=${install_path} -DCMAKE_BUILD_TYPE=Debug 
