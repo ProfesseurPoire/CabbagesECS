@@ -14,16 +14,18 @@ namespace cabba
     {
     public:
 
+        friend class World;
+
     // Lifecycle
 
-        SystemManager(){}
         SystemManager(const SystemManager&) = delete;
+        SystemManager(SystemManager&&)      = delete;
         ~SystemManager();
 
     // Assignment Operators
 
-        SystemManager& operator=(const SystemManager&) = delete;
-
+        SystemManager& operator=(const SystemManager&)  = delete;
+        SystemManager& operator=(SystemManager&&)       = delete;
     // Methods
 
         /*!
@@ -38,7 +40,7 @@ namespace cabba
             static_assert(std::is_base_of<SystemInterface, T>(), "T must inherit from SystemInterface");
             static_assert(std::is_default_constructible<T>(),    "T must have a default constructor");
 
-            if (!this->has<T>())
+            if (!has<T>())
             {
                 _systems.emplace(typeid(T), new T);
             }
@@ -51,6 +53,17 @@ namespace cabba
             _systems.erase(typeid(T));
         }
 
+        template<class T>
+        T& get()
+        {
+            static_assert(std::is_base_of<SystemInterface, T>(), "T must inherit from SystemInterface");
+
+            if (has<T>())
+            {
+                return *static_cast<T*>(_systems[typeid(T)]);
+            }
+        }
+
         /*!
          * @brief   Returns how many System have been registered 
          */
@@ -61,10 +74,17 @@ namespace cabba
          */
         void clear();
 
+        /*
+         * @brief   Returns true if the manager doesn't store any system
+         */
+        bool empty()const;
+
         // Update every System and lambda registered inside the Manager
         void update(World& world, float elapsedTime);
 
     private:
+
+        SystemManager() = default;
 
         // Temporary, need to use my own mappy thingie
         std::map<std::type_index, SystemInterface*> _systems;

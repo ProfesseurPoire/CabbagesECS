@@ -20,7 +20,8 @@ class SystemUT : public cabba::test::Test
         }
 };
 
-class System : public SystemInterface{};
+class System        : public SystemInterface{};
+class OtherSystem   : public SystemInterface {};
 
 TEST_F(SystemUT, add_system)
 {
@@ -40,4 +41,21 @@ TEST_F(SystemUT, remove_system)
     system_manager->remove<System>();
     assert_that(system_manager->has<System>(), equals(false));
     assert_that(system_manager->size(), equals(0));
+}
+
+TEST_F(SystemUT, clear)
+{
+    system_manager->add<System>();
+    system_manager->add<OtherSystem>();
+
+    assert_that(system_manager->has<System>(), equals(true));
+    assert_that(system_manager->has<OtherSystem>(), equals(true));
+    assert_that(system_manager->size(), equals(2));
+
+    system_manager->clear();
+
+    assert_that(system_manager->size(), equals(0));
+    assert_that(system_manager->empty(), equals(true));
+    assert_that(system_manager->has<System>(), equals(false));
+    assert_that(system_manager->has<OtherSystem>(), equals(false));
 }

@@ -215,6 +215,23 @@ namespace cabba
         }
 
         /*
+         * @brief   Returns the component stored inside the pool at the given position
+         */
+        T& get_at(const int position)
+        {
+            return _components[position];
+        }
+
+        /*
+         * @brief   Returns the entity's id for the component stored at the 
+         *          given position
+         */
+        int get_entity_id(const int position)
+        {
+            return _component_lookup_table[position];
+        }
+
+        /*
          * @brief   Directly returns the pointer associated with the given 
          *          entity. WARNING : the pool can invalidate pointers so 
          *          don't cache them, and be careful with it!! Also,

@@ -17,6 +17,11 @@ void SystemManager::clear()
     _systems.clear();
 }
 
+bool SystemManager::empty() const
+{
+    return _systems.size()==0;
+}
+
 void SystemManager::update(World& game, float elapsedTime)
 {
     for (auto& system : _systems)
