@@ -11,6 +11,9 @@ class World;
 class SystemInterface   
 {
 public:
+
+    friend class SystemMap;
+
     virtual void update(World&, float elapsed_time) {};
 };
 }

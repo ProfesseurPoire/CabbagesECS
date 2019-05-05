@@ -13,18 +13,30 @@ class Entity;
  * @brief   Use this class to create and delete new entities. This class
  *          is managed by World
  */
-class EntityManager
+
+    // I should ask myself ... what does the entity Manager does
+    // 1) It is used to query/create/remove new Entities
+    // 2) It owns entities 
+class EntityPool
 {
     int keys = 0;
 
 public:
+
+    friend class World;
     
-    // EntityManager(World& game);
+    // EntityPool(World& game);
 
     /*
      * @brief   Builds a new Entity Manager object that will contains
      */
-    EntityManager(World& game, int size);
+    EntityPool(World& game, int size);
+
+    ~EntityPool();
+    EntityPool(const World&)            = delete;
+    EntityPool(World&&)                 = delete;
+    EntityPool& operator=(const World&) = delete;
+    EntityPool& operator=(World&&)      = delete;
 
     /*
      * @brief   Returns how many entities have been pooled
@@ -41,12 +53,15 @@ public:
      */
     int size()const;
     
-    /*
-     * @brief   Returns an unsued entity
+    /*!
+     * @brief   Returns an unused entity
      */
-    Entity* pool();
+    Entity& get();
 
-    Entity* get(const int index);
+    /*!
+     * @brief   Returns the entity at the given position
+     */
+    Entity* get(const int position);
 
     /*
      * @brief   Release an entity
@@ -77,11 +92,15 @@ public:
 
 private:
 
-    World& _world;
-    Entity* _entities;
+    // Some things really feels unnecessary here 
 
-    List<int>        _registered_entities;
-    List<Entity*>    _released_entities;
-    std::stack<Entity*>     _entity_pool;
+    World& _world;
+
+    // This is where the entities exist for real
+    Entity* _entities = nullptr;
+
+    List<int>           _registered_entities;
+    List<Entity*>       _released_entities;
+    std::stack<Entity*> _entity_pool;
 };
 }

@@ -12,7 +12,7 @@ class SystemUT : public cabba::test::Test
 
         const int entity_size = 100;
         World world{ entity_size };
-        SystemManager* system_manager = nullptr;
+        SystemMap* system_manager = nullptr;
 
         void set_up()override
         {

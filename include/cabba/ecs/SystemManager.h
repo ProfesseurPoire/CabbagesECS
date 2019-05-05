@@ -10,7 +10,13 @@ namespace cabba
     struct SystemInterface;
     class World;
 
-    class SystemManager
+    /*
+     * @brief   This class is really just a map<type_index, SystemInterface*>. 
+     *          The main reason this class exist is to automatically associate
+     *          the type_index of a class 
+     *          
+     */
+    class SystemMap
     {
     public:
 
@@ -18,14 +24,14 @@ namespace cabba
 
     // Lifecycle
 
-        SystemManager(const SystemManager&) = delete;
-        SystemManager(SystemManager&&)      = delete;
-        ~SystemManager();
+        SystemMap(const SystemMap&) = delete;
+        SystemMap(SystemMap&&)      = delete;
+        ~SystemMap();
 
     // Assignment Operators
 
-        SystemManager& operator=(const SystemManager&)  = delete;
-        SystemManager& operator=(SystemManager&&)       = delete;
+        SystemMap& operator=(const SystemMap&)  = delete;
+        SystemMap& operator=(SystemMap&&)       = delete;
     // Methods
 
         /*!
@@ -43,7 +49,7 @@ namespace cabba
             if (!has<T>())
             {
                 _systems.emplace(typeid(T), new T);
-            }
+            }   
         }
 
         template<class T>
@@ -84,7 +90,7 @@ namespace cabba
 
     private:
 
-        SystemManager() = default;
+        SystemMap() = default;
 
         // Temporary, need to use my own mappy thingie
         std::map<std::type_index, SystemInterface*> _systems;

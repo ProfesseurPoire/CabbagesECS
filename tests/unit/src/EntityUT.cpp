@@ -1,6 +1,6 @@
 #include <cabba/test/test.h>
 #include <cabba/ecs/Entity.h>
-#include <cabba/ecs/EntityManager.h>
+#include <cabba/ecs/EntityPool.h>
 
 struct Component
 {
@@ -18,12 +18,12 @@ public:
     const int component_pool_count = 100;
 
     World world{ entity_size };
-    EntityManager* manager;
+    EntityPool* manager;
 
     void set_up()override
     {
         manager = &world.entity_manager();
-        world.initialize_pool<Component>(component_pool_count);
+        world.component_manager().add<Component>(component_pool_count);
     }
 };
 

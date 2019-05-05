@@ -116,36 +116,7 @@ namespace cabba
         };
 
         friend class Handle;
-
-        /*
-         * @brief   When constructing the Component pool, we need to know
-         *          how many entity there is to build our lookup table,
-         *          but we can chose to allocate "less" component if we 
-         *          know only a few will actually be used
-         */
-        ComponentPool(const int entity_size, const int component_size)
-            :   _entity_lookup_table    (new int[entity_size]),
-                _component_lookup_table (new int[component_size]),
-                _components             (new T[component_size]),
-                _size                   (component_size)
-        {
-            for(int i=0; i< entity_size ; ++i)
-            {
-                _entity_lookup_table[i]     = -1;
-            }
-
-            for (int i = 0; i < component_size; ++i)
-            {
-                _component_lookup_table[i] = -1;
-            }
-        }
-
-        ~ComponentPool()
-        {
-            delete[] _components;
-            delete[] _entity_lookup_table;
-            delete[] _component_lookup_table;
-        }
+        friend class World;
 
         // For now all of this is deleted because I don't really
         // think I'll copy the thing around once it's created-
@@ -286,6 +257,38 @@ namespace cabba
 
         T* begin()  {return &_components[0];}
         T* end()    {return &_components[_used];}
+
+    protected:
+
+        /*
+       * @brief   When constructing the Component pool, we need to know
+       *          how many entity there is to build our lookup table,
+       *          but we can chose to allocate "less" component if we
+       *          know only a few will actually be used
+       */
+        ComponentPool(const int entity_size, const int component_size)
+            : _entity_lookup_table(new int[entity_size]),
+            _component_lookup_table(new int[component_size]),
+            _components(new T[component_size]),
+            _size(component_size)
+        {
+            for (int i = 0; i < entity_size; ++i)
+            {
+                _entity_lookup_table[i] = -1;
+            }
+
+            for (int i = 0; i < component_size; ++i)
+            {
+                _component_lookup_table[i] = -1;
+            }
+        }
+
+        ~ComponentPool()
+        {
+            delete[] _components;
+            delete[] _entity_lookup_table;
+            delete[] _component_lookup_table;
+        }
 
     private:
 

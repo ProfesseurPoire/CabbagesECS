@@ -20,6 +20,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     src/entity.cpp
     src/EntityManager.cpp
     src/SystemManager.cpp
+	src/World.cpp
     include/cabba/ecs/ComponentPool.h
     include/cabba/ecs/Constant.h
     include/cabba/ecs/Entity.h
