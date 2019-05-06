@@ -10,7 +10,7 @@ using namespace cabba;
 int main()
 {
     return cabba::test::run_all();
-}
+ }
 
 struct ComponentA{int value = 1;};
 struct ComponentB{int value = 5;};
@@ -23,10 +23,11 @@ public:
 
     void update(World& world, float elapsed_time)override 
     {
-        /*ComponentPool<ComponentA>& pool = *world.get_component_pool<ComponentA>();
+        ObserverPointer<ComponentPool<ComponentA>>& pool = 
+            world.get_component_pool<ComponentA>();
 
-        for (ComponentA& component : pool)
-            sum += component.value;*/
+        for (ComponentA& component : *pool.operator->())
+            sum += component.value;
     }
 };
 
@@ -38,23 +39,23 @@ public:
 
     void update(World& world, float elapsed_time)override
     {
-        //ComponentPool<ComponentA>& poolA = *world.get_component_pool<ComponentA>();
-        //ComponentPool<ComponentB>& poolB = *world.get_component_pool<ComponentB>();
+        auto poolA = world.get_component_pool<ComponentA>();
+        auto poolB = world.get_component_pool<ComponentB>();
 
-        //for (int i = 0; i < poolA.used(); ++i)
-        //{
-        //    // Not exactly the most clear way to use the pool but it's either that,
-        //    // create an iterator, or to store the entity id inside the component
+        for (int i = 0; i < poolA->used(); ++i)
+        {
+            // Not exactly the most clear way to use the pool but it's either that,
+            // create an iterator, or to store the entity id inside the component
 
-        //    int entity_id = poolA.get_entity_id(i);
+            int entity_id = poolA->get_entity_id(i);
 
-        //    if (poolB.exist(entity_id))
-        //    {
-        //        ComponentB* b = poolB.get_raw(entity_id);
-        //        sum += poolA.get_at(i).value;
-        //        sum += b->value;
-        //    }
-        //}
+            if (poolB->exist(entity_id))
+            {
+                ComponentB* b = poolB->get_raw(entity_id);
+                sum += poolA->get_at(i).value;
+                sum += b->value;
+            }
+        }
     }
 };
 
@@ -72,9 +73,6 @@ TEST(Integration, SuperTest)
     // I guess I could technically return a shared_ptr? Or a const
     // shared_ptr? 
     ObserverPointer<ComponentPool<ComponentA>> c = world.get_component_pool<ComponentA>();
-
-    delete c._ptr;
-    
 
     // In the end you can still hack even that though
     //delete c.operator->();

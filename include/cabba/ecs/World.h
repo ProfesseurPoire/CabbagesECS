@@ -62,11 +62,11 @@ namespace cabba
         int*    _count;
         bool*   _lived;
         T*      _ptr;
-        ObserverPointer() = default;
 
     protected:
 
-        
+        ObserverPointer(T* ptr, bool *lived) 
+            :_count(new int(1)), _ptr(ptr), _lived(lived){}
     };
 
     template<class T>
@@ -75,15 +75,36 @@ namespace cabba
     public:
 
         OwningPointer() = default;
+
+       /* template<typename T, typename... Args>
+        OwningPointer(Args&&... args)
+        {
+            return unique_ptr<T>(new T(std::forward<Args>(args)...));
+        }*/
+
         OwningPointer(T*  t)
         {
             _ptr = t;
         }
 
+        // Can't copy a Owning pointer around
+        OwningPointer(const OwningPointer&) = delete;
+        OwningPointer& operator=(const OwningPointer&) = delete;
+
+        OwningPointer(OwningPointer&& p)
+        {
+            move(p);
+        }
+
+        OwningPointer& operator=(OwningPointer&& p)
+        {
+            move(p);
+            return *this;
+        }
+
         ~OwningPointer()
         {
             reset();
-            delete _ptr;
         }
 
         T* operator->()
@@ -91,10 +112,22 @@ namespace cabba
             return _ptr;
         }
 
+        T& operator*()
+        {
+            return *_ptr;
+        }
+
+        operator bool()
+        {
+            return _ptr != nullptr;
+        }
+
         void reset()
         {
             if(_lived!=nullptr)
                 *_lived = false;
+
+            delete _ptr;
         }
 
         template<class U>
@@ -106,17 +139,21 @@ namespace cabba
             // Creates a thing in the heap to track if the 
             // pointer is still valid or not
             _lived = new bool(true);
-
-            ObserverPointer<U> observer;
-            observer._ptr   = static_cast<U*>(_ptr);
-            observer._count = new int(1);
-            observer._lived = _lived;
-
-            return observer;
+            return ObserverPointer<U>(static_cast<U*>(_ptr), _lived);
         }
 
         bool*   _lived = nullptr;
         T*      _ptr;
+
+    private:
+
+        void move(OwningPointer& p)
+        {
+            _ptr        = p._ptr;
+            _lived      = p._lived;
+            p._ptr      = nullptr;
+            p._lived    = nullptr;
+        }
     };
 
     // If a pool of component doesn't exist, it will get
@@ -170,12 +207,12 @@ namespace cabba
         template<class T>
         void add_component_pool(const int pool_size)
         {
-            _component_pools[typeid(T)] = OwningPointer<AbstractPool>(
+            _component_pools[typeid(T)] = std::move( OwningPointer<AbstractPool>(
                     new ComponentPool<T>(
                         _entity_manager.size(), pool_size
                         )
                     
-                    );
+                    ));
         }
 
         template<class T>

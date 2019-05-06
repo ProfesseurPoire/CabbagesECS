@@ -37,8 +37,6 @@ void EntityPool::release(Entity* entity)
     _released_entities.push_back(entity);
 }
 
-
-
 int EntityPool::left()const
 {
     return _entity_pool.size();
