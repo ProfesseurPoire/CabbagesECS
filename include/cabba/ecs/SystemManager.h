@@ -43,8 +43,8 @@ namespace cabba
         template<class T>
         void add()
         {
-            static_assert(std::is_base_of<SystemInterface, T>(), "T must inherit from SystemInterface");
-            static_assert(std::is_default_constructible<T>(),    "T must have a default constructor");
+            static_assert(std::is_base_of<SystemInterface, T>(), "Template argument must inherit from SystemInterface");
+            static_assert(std::is_default_constructible<T>(),    "Template argument must have a default constructor");
 
             if (!has<T>())
             {

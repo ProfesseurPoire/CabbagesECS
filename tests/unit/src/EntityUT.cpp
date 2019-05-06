@@ -1,6 +1,6 @@
 #include <cabba/test/test.h>
 #include <cabba/ecs/Entity.h>
-#include <cabba/ecs/EntityPool.h>
+#include <cabba/ecs/EntityManager.h>
 
 struct Component
 {

@@ -116,7 +116,7 @@ namespace cabba
         };
 
         friend class Handle;
-        friend class World;
+        //friend class World;
 
         // For now all of this is deleted because I don't really
         // think I'll copy the thing around once it's created-
@@ -258,7 +258,6 @@ namespace cabba
         T* begin()  {return &_components[0];}
         T* end()    {return &_components[_used];}
 
-    protected:
 
         /*
        * @brief   When constructing the Component pool, we need to know
@@ -282,6 +281,9 @@ namespace cabba
                 _component_lookup_table[i] = -1;
             }
         }
+
+
+    protected:
 
         ~ComponentPool()
         {

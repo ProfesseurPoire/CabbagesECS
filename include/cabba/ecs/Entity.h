@@ -14,7 +14,6 @@ namespace cabba
     public:
 
         bool enabled;
-
         EntityId id()const;
         
 

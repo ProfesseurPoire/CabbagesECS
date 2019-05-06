@@ -8,7 +8,7 @@ void World::release_entity_immediate(Entity* e)
     // Making sure to also delete the components I guess
     for (auto& pair : _component_pools)
     {
-        pair.second.operator->()->exist(e->id());
+        pair.second->exist(e->id());
 
         // Check if there's a component associated to the entity
         if (pair.second->exist(e->id()))

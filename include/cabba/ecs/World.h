@@ -6,14 +6,16 @@
 
 #include <memory>
 #include <iostream>
+#include <type_traits>
 
 namespace cabba
 {
-  /*  template<class T>
+    template<class T>
     class ObserverPointer
     {
     public:
 
+        template <class T>
         friend class OwningPointer;
 
         bool valid()const
@@ -21,16 +23,35 @@ namespace cabba
             return *_lived;
         }
 
-        ObserverPointer(const ObserverPointer p)
+        ObserverPointer(const ObserverPointer& p)
         {
-            *_count++;
+            _count  = p._count;
+            (*_count)++;
             _ptr    = p._ptr;
             _lived  = p._lived;
         }
 
+        ObserverPointer& operator=(const ObserverPointer& p)
+        {
+            _count = p._count;
+            (*_count)++;
+            _ptr = p._ptr;
+            _lived = p._lived;
+        }
+
+        T* operator->()
+        {
+            if (*_lived)
+            {
+                return _ptr;
+            }
+            return nullptr;
+        }
+
         ~ObserverPointer()
         {
-            *_count--;
+            (*_count)--;
+
             if(*_count==0)
             {
                 delete _lived;
@@ -38,16 +59,14 @@ namespace cabba
             }
         }
 
-        int* _count;
-        bool* _lived;
-        T* _ptr;
+        int*    _count;
+        bool*   _lived;
+        T*      _ptr;
+        ObserverPointer() = default;
 
     protected:
 
-        ObserverPointer()
-        {
-
-        }
+        
     };
 
     template<class T>
@@ -55,25 +74,41 @@ namespace cabba
     {
     public:
 
-        OwningPointer(T * t)
+        OwningPointer() = default;
+        OwningPointer(T*  t)
         {
             _ptr = t;
         }
 
         ~OwningPointer()
         {
-            if(_lived!=nullptr)
-                *_lived = false;
-
+            reset();
             delete _ptr;
         }
 
-        ObserverPointer<T> create_observer()
+        T* operator->()
         {
+            return _ptr;
+        }
+
+        void reset()
+        {
+            if(_lived!=nullptr)
+                *_lived = false;
+        }
+
+        template<class U>
+        ObserverPointer<U> create_observer()
+        {
+            static_assert(std::is_base_of<T, U>(), 
+                          "Template parameter is not base of observed Pointer");
+
+            // Creates a thing in the heap to track if the 
+            // pointer is still valid or not
             _lived = new bool(true);
 
-            ObserverPointer<T> observer;
-            observer._ptr   = _ptr;
+            ObserverPointer<U> observer;
+            observer._ptr   = static_cast<U*>(_ptr);
             observer._count = new int(1);
             observer._lived = _lived;
 
@@ -82,49 +117,8 @@ namespace cabba
 
         bool*   _lived = nullptr;
         T*      _ptr;
-    };*/
+    };
 
-    //
-    //// Making my own clunck Pointer because SharedPtr and 
-    //// UniquePtr doesn't works 
-    //template<class T>
-    //class CustomPointer
-    //{
-    //    List<CustomPointer*>* _other_pointers = nullptr;
-
-    //    CustomPointer(T* v)
-    //    {
-    //        // This is the original
-    //        _ptr = v;
-    //        _other_pointers = new List<CustomPointer>();
-    //        _other_pointers->add(this);
-    //    }
-
-    //    CustomPointer(const CustomPointer& c)
-    //    {
-    //        c._other_pointers.add(this);
-    //        _other_pointers.add(&c);
-    //        _ptr = c._ptr;
-    //    }
-
-    //    ~CustomPointer()
-    //    {
-    //        
-    //    }
-
-    //    void reset()
-    //    {
-    //        _ptr = nullptr;
-    //        for(auto : _other_pointers)
-    //        {
-    //            
-    //        }
-    //    }
-
-    //    T* _ptr;
-
-    //    
-    //};
     // If a pool of component doesn't exist, it will get
     // initialized. Thus I advise you to initialize every 
     // pool at the start of the game to avoid random
@@ -139,7 +133,6 @@ namespace cabba
          */
         World(const int entity_count) 
             : _entity_manager(*this, entity_count){}
-
        
         /*Entity& get_entity()
         {
@@ -162,9 +155,9 @@ namespace cabba
          * @brief   Returns a pool of type T. Must have been initialized before
          */
         template<class T>
-        std::unique_ptr<ComponentPool<T>>& get_component_pool()
+        ObserverPointer<ComponentPool<T>> get_component_pool()
         {
-            return static_cast<std::unique_ptr<ComponentPool<T>>>(_component_pools.at(typeid(T)));
+            return _component_pools.at(typeid(T)).create_observer<ComponentPool<T>>();
         }
 
         /*!
@@ -177,8 +170,12 @@ namespace cabba
         template<class T>
         void add_component_pool(const int pool_size)
         {
-            _component_pools[typeid(T)] = std::unique_ptr<ComponentPool<T>>(
-                _entity_manager.size(), pool_size);
+            _component_pools[typeid(T)] = OwningPointer<AbstractPool>(
+                    new ComponentPool<T>(
+                        _entity_manager.size(), pool_size
+                        )
+                    
+                    );
         }
 
         template<class T>
@@ -207,8 +204,7 @@ namespace cabba
 
     private:
 
-        std::map<std::type_index, std::unique_ptr<AbstractPool>>    _component_pools;
-
+        std::map<std::type_index, OwningPointer<AbstractPool>>    _component_pools;
         std::map<std::type_index, SystemInterface*> _systems;
 
         EntityPool       _entity_manager;
