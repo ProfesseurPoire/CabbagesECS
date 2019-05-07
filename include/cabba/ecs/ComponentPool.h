@@ -282,7 +282,6 @@ namespace cabba
             }
         }
 
-
     protected:
 
         ~ComponentPool()

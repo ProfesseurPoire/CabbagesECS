@@ -18,15 +18,14 @@ target_link_libraries(${PROJECT_NAME}  optimized	SimpleList)
 target_sources(${PROJECT_NAME} PRIVATE
     src/entity.cpp
     src/EntityManager.cpp
-    src/SystemManager.cpp
     src/World.cpp
     include/cabba/ecs/ComponentPool.h
     include/cabba/ecs/Constant.h
     include/cabba/ecs/Entity.h
     include/cabba/ecs/EntityManager.h
     include/cabba/ecs/System.h
-    include/cabba/ecs/SystemManager.h
     include/cabba/ecs/World.h
+	include/cabba/ecs/PolymorphicMap.h
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
