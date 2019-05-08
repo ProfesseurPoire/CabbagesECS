@@ -19,6 +19,7 @@ class System1Pool: public SystemInterface
 {
 public:
 
+
     int sum = 0;
 
     void update(World& world, float elapsed_time)override 
@@ -85,9 +86,7 @@ TEST(Integration, SuperTest)
 
     // Emulates a game loop
     for (int i = 0; i < 10; i++)
-    {
         world.update();
-    }
 
     assert_that(world.get_system<System1Pool>()->sum, equals(20));
     assert_that(world.get_system<System2Pool>()->sum, equals(60));

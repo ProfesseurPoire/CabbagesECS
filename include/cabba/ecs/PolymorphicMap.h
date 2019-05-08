@@ -1,20 +1,22 @@
 #pragma once
 
+#include <cabba/ecs/OwningPointer.h>
+
 #include <map>
 #include <type_traits>
 #include <typeindex>
-
-#include <cabba/ecs/OwningPointer.h>
 
 namespace cabba
 {
 
 /*!
- * @brief   Map that associates the type of a class that 
- *          inherits from the given template argument with a pointer
- *          to an instance of that type
- *
- *          There can only be 1 instance for a given type
+ * @brief   A map associates a key and a mapped value. 
+ * 
+ *          Here, the mapped value is a pointer to an object that must 
+ *          inherits from the given template argument. 
+ *          
+ *          The key that is used to identity the mapped value is of the type 
+ *          of the derived object stored by the map
  */
 template<class Base>
 class PolymorphicMap
@@ -30,66 +32,73 @@ public:
 
     PolymorphicMap() = default;
 
+    /*
+     * @brief   Copy is delete because I can't copy with only a pointer
+     *          to the base class. I could have a virtual "copy" function but 
+     *          that would be a bit cluncky
+     */
     PolymorphicMap(const PolymorphicMap&)               = delete;
     PolymorphicMap(PolymorphicMap&&)                    = delete;
 
     PolymorphicMap& operator=(PolymorphicMap&)          = delete;
     PolymorphicMap& operator=(const PolymorphicMap&)    = delete;
+    ~PolymorphicMap() = default;
 
 // Methods
 
-    Iterator begin(){ return _map.begin();}
-    Iterator end()  { return _map.end();}
+    Iterator begin()    { return _map.begin();  }
+    Iterator end()      { return _map.end();    }
 
+    /*
+     * @brief   Directly creates a new Derived object. The arguments given
+     *          by the user to the function will be forwarded to the Derived
+     *          constructor
+     *      
+     */
     template<typename Derived, typename... Args>
     void emplace(Args&& ... args)
     {
+        check_template_argument<Derived>();
         if (!has<Derived>())
             _map.emplace(typeid(Derived), new Derived(std::forward<Args>(args)...));
     }
 
+    /*
+     * @brief Adds a new Derived object to the map using its type as the key
+     */
     template<class Derived>
     void add()
     {
-        static_assert(std::is_base_of<Base, Derived>(), "Template argument must inherit from SystemInterface");
-        static_assert(std::is_default_constructible<Derived>(), "Template argument must have a default constructor");
+        check_template_argument<Derived>();
+        static_assert(std::is_default_constructible<Derived>(),
+                      "Template argument must have a default constructor.");
 
         if (!has<Derived>())
-        {
             _map.emplace(typeid(Derived),  new Derived);
-        }
     }
 
-    template<typename Derived, typename... Args>
-    void add(Args&& ... args)
-    {
-        static_assert(std::is_base_of<Base, Derived>(), "Template argument must inherit from SystemInterface");
-
-        if (!has<Derived>())
-        {
-            _map.emplace(typeid(Derived), new Derived(std::forward<Args>(args)...));
-        }
-    }
-
+    /*
+     * @brief   Checks if the map already has a key that stores the given
+     *          template argument's type
+     */
     template<class Derived>
     bool has()
     {
-        static_assert(std::is_base_of<Base, Derived>(), "T must inherit from SystemInterface");
+        check_template_argument<Derived>();
         return _map.count(typeid(Derived)) > 0;
     }
 
     template<class Derived>
     void remove()
     {
-        static_assert(std::is_base_of<Base, Derived>(), "T must inherit from SystemInterface");
+        check_template_argument<Derived>();
         _map.erase(typeid(Derived));
     }
 
     template<class Derived>
     ObserverPointer<Derived> get()
     {
-        static_assert(std::is_base_of<Base, Derived>(), "T must inherit from SystemInterface");
-
+        check_template_argument<Derived>();
         if (has<Derived>())
             return _map[typeid(Derived)].create_observer<Derived>();
     }
@@ -105,16 +114,23 @@ public:
     void clear() 
     {
         for (auto& pair : _map)
-            system.second.reset();
+            pair.second.reset();
         _map.clear();
     }
 
     /*
      * @brief   Returns true if the manager doesn't store any system
      */
-    bool empty()const{ return _systems.size() == 0; }
+    bool empty()const{ return _map.size() == 0; }
 
 private:
+
+    template<class Derived>
+    void check_template_argument()const
+    {
+        static_assert(std::is_base_of<Base, Derived>(),
+                      "Template argument must inherit from Base.");
+    }
 
     std::map<std::type_index, OwningPointer<Base>> _map;
 };

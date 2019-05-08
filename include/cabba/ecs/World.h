@@ -21,6 +21,8 @@ namespace cabba
     {
     public:
 
+        friend class EntityPool;
+
         /*!
          * @brief   Construct the world object and the EntityPool and 
          *          component manager using the given parameters
@@ -59,7 +61,7 @@ namespace cabba
         template<class T>
         void add_component_pool(const int pool_size)
         {
-            _component_pools.add<ComponentPool<T>>(_entity_manager.size(), pool_size);
+            _component_pools.emplace<ComponentPool<T>>(_entity_manager.size(), pool_size);
         }
 
         template<class T>
@@ -86,6 +88,29 @@ namespace cabba
             for (auto& pair : _system_map)
                 pair.second->update(*this, 0.0f);
         }
+
+        int system_size()const
+        {
+            return _system_map.size();
+        }
+
+        template<class T>
+        bool has_system()
+        {
+            return _system_map.has<T>();
+        }
+
+        template<class T>
+        void remove_system()
+        {
+            _system_map.remove<T>();
+        }
+
+        void clear_systems()
+        {
+            _system_map.clear();
+        }
+
 
     private:
 

@@ -22,38 +22,38 @@ public:
 
     void set_up()override
     {
-        manager = &world.entity_manager();
-        world.component_manager().add<Component>(component_pool_count);
+        world.add_component_pool<Component>(component_pool_count);
+        manager = &world.entity_pool();
     }
 };
 
 TEST_F(EntityUT, pool_size)
 {
-    assert_that(manager->size(), equals(entity_size));
-    assert_that(manager->left(), equals(entity_size));
+    assert_that(world.entity_pool().size(), equals(entity_size));
+    assert_that(world.entity_pool().left(), equals(entity_size));
 }
 
 TEST_F(EntityUT, pool)
 {
-    Entity* e = manager->pool();
+    Entity& e = manager->get();
     assert_that(manager->left(), equals(entity_size - 1));
 }
 
 TEST_F(EntityUT, release)
 {
-    Entity* e = manager->pool();
+    Entity& e = manager->get();
     assert_that(manager->left(), equals(entity_size - 1));
 
     // Release should not be immidiate, except if asked 
     // for immediate release
-    manager->release_immediate(e);
+    manager->release_immediate(&e);
     assert_that(manager->left(), equals(entity_size));
 }
 
 TEST_F(EntityUT, release_multiple)
 {
-    manager->release(manager->pool());
-    manager->release(manager->pool());
+    manager->release(&manager->get());
+    manager->release(&manager->get());
 
     assert_that(manager->left(), equals(entity_size - 2));
     assert_that(manager->used(), equals(2));
@@ -66,7 +66,7 @@ TEST_F(EntityUT, release_multiple)
 
 TEST_F(EntityUT, add_component)
 {
-    Entity* e = manager->pool();
+    Entity* e = &manager->get();
 
     assert_that(e->has_component<Component>(), equals(false));
 

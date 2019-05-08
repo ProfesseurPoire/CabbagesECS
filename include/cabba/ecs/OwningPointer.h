@@ -17,6 +17,8 @@ class OwningPointer
 {
 public:
 
+// Lifecycle
+
     OwningPointer() = default;
 
     template<typename T, typename... Args>
@@ -26,28 +28,45 @@ public:
     }
 
     OwningPointer(T* t) { _ptr = t; }
-    OwningPointer(OwningPointer&& p) { move(p); }
 
     // Can't copy a Owning pointer around
     OwningPointer(const OwningPointer&) = delete;
-    OwningPointer& operator=(const OwningPointer&) = delete;
+    OwningPointer(OwningPointer&& p) { move(p); }
 
+    ~OwningPointer() { reset(); }
+
+// Asignment Operator
+
+    OwningPointer& operator=(const OwningPointer&) = delete;
     OwningPointer& operator=(OwningPointer&& p)noexcept
     {
         move(p);
         return *this;
     }
 
-    ~OwningPointer()    { reset();                  }
-    T* operator->()     { return _ptr;              }
-    T& operator*()      { return *_ptr;             }
-    operator bool()     { return _ptr != nullptr;   }
+// Operators
 
+    T* operator->() { return _ptr;  }
+    T& operator*()  { return *_ptr; }
+    operator bool() { return _ptr != nullptr; }
+
+// Functions
+    
     void reset()
     {
         if (_lived != nullptr)
             * _lived = false;
+
         delete _ptr;
+        _ptr = nullptr;
+    }
+
+    ObserverPointer<T> create_observer()
+    {
+        // Creates a thing in the heap to track if the 
+        // pointer is still valid or not
+        _lived = new bool(true);
+        return ObserverPointer<T>(_ptr, _lived);
     }
 
     template<class U>
@@ -61,10 +80,9 @@ public:
         return ObserverPointer<U>(static_cast<U*>(_ptr), _lived);
     }
 
-    bool*   _lived  = nullptr;
-    T*      _ptr    = nullptr;
-
 private:
+
+// Functions
 
     void move(OwningPointer & p)
     {
@@ -73,5 +91,16 @@ private:
         p._ptr      = nullptr;
         p._lived    = nullptr;
     }
+
+// Member variables 
+
+    // When the owning pointer creates an observer, it also creates a place
+    // in the heap where he stores the current state of the owned data.
+    // If the data is destroyed, _lived goes to false, and the Observer
+    // are awake that the data no longer lives on
+    bool*   _lived  = nullptr;  
+                                
+    // Pointer to the data currently managed by the owning pointer
+    T*      _ptr    = nullptr;
 };
 }

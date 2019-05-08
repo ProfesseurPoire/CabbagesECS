@@ -16,121 +16,127 @@ Param& operator<<(Param& p, ComponentTest c)
     printf("%i", c.value);
     return p;
 }
-//
-//class ComponentUT : public Test
-//{
-//public:
-//
-//    const int entity_size       = 100;
-//    const int component_size    = 100;
-//
-//    ComponentPool<ComponentTest> pool{ entity_size, component_size };
-//
-//    void set_up()override
-//    {
-//        pool.add(0);
-//    }
-//};
-//
-//TEST_F(ComponentUT, add_component)
-//{
-//    assert_that(pool.left(), equals(component_size - 1));
-//    assert_that(pool.used(), equals(1));
-//}
-//
-//TEST_F(ComponentUT, get_component)
-//{
-//    // Just making sure the get returns a handle
-//    // to the same component
-//    ComponentPool<ComponentTest>::Handle component1 =  pool.get(0);
-//
-//    component1->value = 10;
-//
-//    auto component2 = pool.get(0);
-//
-//    assert_that(component1.valid(), equals(true));
-//    assert_that(component2->value, equals(10));
-//
-//    auto component3 = pool.get(1);
-//
-//    assert_that(component3.valid(), equals(false));
-//}
-//
-//TEST_F(ComponentUT, get_raw_component)
-//{
-//    ComponentTest* component = pool.get_raw(0);
-//
-//    assert_that(component->value, equals(5));
-//}
-//
-//TEST_F(ComponentUT, remove_component)
-//{
-//    assert_that(pool.left(), equals(component_size - 1));
-//    assert_that(pool.used(), equals(1));
-//
-//    pool.remove(0);
-//
-//    assert_that(pool.left(), equals(component_size));
-//    assert_that(pool.used(), equals(0));
-//}
-//
-//TEST_F(ComponentUT, remove_unorder)
-//{
-//    pool.add(1);
-//    pool.add(2);
-//
-//    auto c1     = pool.get(0);
-//    auto c2     = pool.get(1);
-//    auto c3     = pool.get(2);
-//
-//    c1->value   = 1;
-//    c2->value   = 2;
-//    c3->value   = 3;
-//
-//    assert_that(pool.left(), equals(component_size - 3));
-//    assert_that(pool.used(), equals(3));
-//
-//    pool.remove(1);
-//
-//    assert_that(pool.left(), equals(component_size-2));
-//    assert_that(pool.used(), equals(2));
-//
-//    // Since we remove the second entity, the handle should
-//    // now tell us that it is not valid anymore
-//    assert_that(c2.valid(), equals(false));
-//
-//    int sum = 0;
-//
-//    for (ComponentTest& comp : pool)
-//        sum += comp.value;
-//
-//    assert_that(sum, equals(4));
-//}
-//
-//TEST_F(ComponentUT, loop_components)
-//{
-//    pool.add(1);
-//
-//    auto c1     = pool.get(0);
-//    auto c2     = pool.get(1);
-//
-//    c1->value   = 1;
-//    c2->value   = 3;
-//
-//    int sum     = 0;
-//
-//    for(ComponentTest& comp : pool)
-//    {
-//        sum += comp.value;
-//    }
-//
-//    assert_that(sum, equals(4));
-//}
-//
-//TEST_F(ComponentUT, component_exist)
-//{
-//    assert_that(pool.exist(0), equals(true));
-//    assert_that(pool.exist(1), equals(false));
-//}
+
+class ComponentUT : public Test
+{
+public:
+
+    const int entity_size       = 100;
+    const int component_size    = 100;
+
+    World world{ 100 };
+
+    ObserverPointer<ComponentPool<ComponentTest>> pool;
+
+
+    void set_up()override
+    {
+        world.add_component_pool<ComponentTest>(100);
+
+        pool = world.get_component_pool<ComponentTest>();
+        pool->add(0);
+    }
+};
+
+TEST_F(ComponentUT, add_component)
+{
+    assert_that(pool->left(), equals(component_size - 1));
+    assert_that(pool->used(), equals(1));
+}
+
+TEST_F(ComponentUT, get_component)
+{
+    // Just making sure the get returns a handle
+    // to the same component
+    ComponentPool<ComponentTest>::Handle component1 =  pool->get(0);
+
+    component1->value = 10;
+
+    auto component2 = pool->get(0);
+
+    assert_that(component1.valid(), equals(true));
+    assert_that(component2->value, equals(10));
+
+    auto component3 = pool->get(1);
+
+    assert_that(component3.valid(), equals(false));
+}
+
+TEST_F(ComponentUT, get_raw_component)
+{
+    ComponentTest* component = pool->get_raw(0);
+
+    assert_that(component->value, equals(5));
+}
+
+TEST_F(ComponentUT, remove_component)
+{
+    assert_that(pool->left(), equals(component_size - 1));
+    assert_that(pool->used(), equals(1));
+
+    pool->remove(0);
+
+    assert_that(pool->left(), equals(component_size));
+    assert_that(pool->used(), equals(0));
+}
+
+TEST_F(ComponentUT, remove_unorder)
+{
+    pool->add(1);
+    pool->add(2);
+
+    auto c1     = pool->get(0);
+    auto c2     = pool->get(1);
+    auto c3     = pool->get(2);
+
+    c1->value   = 1;
+    c2->value   = 2;
+    c3->value   = 3;
+
+    assert_that(pool->left(), equals(component_size - 3));
+    assert_that(pool->used(), equals(3));
+
+    pool->remove(1);
+
+    assert_that(pool->left(), equals(component_size-2));
+    assert_that(pool->used(), equals(2));
+
+    // Since we remove the second entity, the handle should
+    // now tell us that it is not valid anymore
+    assert_that(c2.valid(), equals(false));
+
+    int sum = 0;
+
+    for (ComponentTest& comp : *pool.operator->())
+        sum += comp.value;
+
+    assert_that(sum, equals(4));
+}
+
+TEST_F(ComponentUT, loop_components)
+{
+    pool->add(1);
+
+    auto c1     = pool->get(0);
+    auto c2     = pool->get(1);
+
+    c1->value   = 1;
+    c2->value   = 3;
+
+    int sum     = 0;
+
+    for(ComponentTest& comp : *pool.operator->())
+    {
+        sum += comp.value;
+    }
+
+    assert_that(sum, equals(4));
+}
+
+TEST_F(ComponentUT, component_exist)
+{
+    assert_that(pool->exist(0), equals(true));
+    assert_that(pool->exist(1), equals(false));
+}
 
 

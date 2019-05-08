@@ -49,19 +49,19 @@ int EntityPool::size()const
 
 void EntityPool::release_immediate(Entity* e)
 {
-    //// Making sure to also delete the components I guess
-    //for (auto& pair : _world.component_manager()._pools)
-    //{
-    //    // Check if there's a component associated to the entity
-    //    if(pair.second->exist(e->id()))
-    //    {
-    //        // Then we remove the component from the entity
-    //        pair.second->remove(e->id());
-    //    }
-    //}
+    // Making sure to also delete the components I guess
+    for (auto& pair : _world._component_pools)
+    {
+        // Check if there's a component associated to the entity
+        if(pair.second->exist(e->id()))
+        {
+            // Then we remove the component from the entity
+            pair.second->remove(e->id());
+        }
+    }
 
-    //_registered_entities.remove(e->id());
-    //_entity_pool.emplace(e);
+    _registered_entities.remove(e->id());
+    _entity_pool.emplace(e);
 }
 
 void EntityPool::finalize_release()
