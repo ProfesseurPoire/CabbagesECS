@@ -24,8 +24,7 @@ public:
 
     void update(World& world, float elapsed_time)override 
     {
-        ObserverPointer<ComponentPool<ComponentA>>& pool = 
-            world.get_component_pool<ComponentA>();
+        auto pool = world.get_component_pool<ComponentA>();
 
         for (ComponentA& component : *pool.operator->())
             sum += component.value;
