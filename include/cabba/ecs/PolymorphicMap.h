@@ -103,8 +103,8 @@ public:
     ObserverPointer<Derived> get()
     {
         check_template_argument<Derived>();
-        if (has<Derived>())
-            return _map[typeid(Derived)].create_derived_observer<Derived>();
+        if (has<Derived>())         // No idea why but GCC wants the template thing
+            return _map[typeid(Derived)].template create_derived_observer<Derived>();
     }
 
     /*!
