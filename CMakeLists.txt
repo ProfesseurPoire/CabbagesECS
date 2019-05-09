@@ -25,7 +25,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     include/cabba/ecs/EntityManager.h
     include/cabba/ecs/System.h
     include/cabba/ecs/World.h
-	include/cabba/ecs/PolymorphicMap.h
+    include/cabba/ecs/PolymorphicMap.h
 )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)

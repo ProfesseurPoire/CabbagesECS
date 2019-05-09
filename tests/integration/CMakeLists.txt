@@ -13,3 +13,4 @@ target_sources(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} CabbagesECS debug		cabbages-testd)
 target_link_libraries(${PROJECT_NAME} CabbagesECS optimized cabbages-test)
 
+add_test( NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} )
