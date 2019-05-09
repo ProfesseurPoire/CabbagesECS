@@ -65,17 +65,10 @@ namespace cabba
         }
 
         template<class T>
-        void remove_component_pool()
-        {
-            _component_pools[typeid(T)].reset();
-            _component_pools.erase(typeid(T));
-        }
+        void remove_component_pool() { _component_pools.remove<T>(); }
 
         template<class T>
-        void add_system()
-        {
-            _system_map.add<T>();
-        }
+        void add_system()       {_system_map.add<T>();}
 
         template<class T>
         ObserverPointer<T> get_system()

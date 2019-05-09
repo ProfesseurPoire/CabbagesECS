@@ -40,11 +40,15 @@ public:
     PolymorphicMap(const PolymorphicMap&)               = delete;
     PolymorphicMap(PolymorphicMap&&)                    = delete;
 
-    PolymorphicMap& operator=(PolymorphicMap&)          = delete;
-    PolymorphicMap& operator=(const PolymorphicMap&)    = delete;
+    
     ~PolymorphicMap() = default;
 
-// Methods
+// Assignment Operators
+
+    PolymorphicMap& operator=(PolymorphicMap&) = delete;
+    PolymorphicMap& operator=(const PolymorphicMap&) = delete;
+
+// Functions
 
     Iterator begin()    { return _map.begin();  }
     Iterator end()      { return _map.end();    }
@@ -100,7 +104,7 @@ public:
     {
         check_template_argument<Derived>();
         if (has<Derived>())
-            return _map[typeid(Derived)].create_derived_observer<Derived>();
+            return _map[typeid(Derived)].create_observer<Derived>();
     }
 
     /*!
