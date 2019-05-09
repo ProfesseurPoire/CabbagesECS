@@ -7,7 +7,7 @@ class ObserverPointer
 {
 public:
 
-    template <class T>
+    template <class U>
     friend class OwningPointer;
 
     ObserverPointer()   = default;
