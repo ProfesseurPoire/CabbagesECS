@@ -21,7 +21,7 @@ public:
 
     OwningPointer() = default;
 
-    template<typename T, typename... Args>
+    template<typename... Args>
     OwningPointer(Args&&... args)
     {
         _ptr = new T(std::forward<Args>(args)...);
