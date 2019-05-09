@@ -17,16 +17,17 @@ class OwningPointer
 {
 public:
 
+// Static Functions
+
+    template<typename... Args>
+    OwningPointer make(Args&&... args)
+    {
+        return OwningPointer(new T(std::forward<Args>(args)...));
+    }
+
 // Lifecycle
 
     OwningPointer() = default;
-
-    template<typename... Args>
-    OwningPointer(Args&&... args)
-    {
-        _ptr = new T(std::forward<Args>(args)...);
-    }
-
     OwningPointer(T* t) { _ptr = t; }
 
     // Can't copy a Owning pointer around
@@ -70,7 +71,7 @@ public:
     }
 
     template<class U>
-    ObserverPointer<U> create_observer()
+    ObserverPointer<U> create_derived_observer()
     {
         static_assert(std::is_base_of<T, U>(),
                       "Template parameter is not a base of observed Pointer");

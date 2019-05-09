@@ -100,7 +100,7 @@ public:
     {
         check_template_argument<Derived>();
         if (has<Derived>())
-            return _map[typeid(Derived)].create_observer<Derived>();
+            return _map[typeid(Derived)].create_derived_observer<Derived>();
     }
 
     /*!
